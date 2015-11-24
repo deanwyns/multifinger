@@ -1,12 +1,10 @@
 package com.realdolmen.multifinger;
 
-import android.graphics.Path;
-
 import java.io.Serializable;
 
 public class StrokeDto implements Serializable {
     private int color;
-    private Path path;
+    private SerializablePath path;
 
     public int getColor() {
         return color;
@@ -16,11 +14,11 @@ public class StrokeDto implements Serializable {
         this.color = color;
     }
 
-    public Path getPath() {
+    public SerializablePath getPath() {
         return path;
     }
 
-    public void setPath(Path path) {
+    public void setPath(SerializablePath path) {
         this.path = path;
     }
 }

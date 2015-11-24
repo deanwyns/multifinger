@@ -20,6 +20,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 
 public class GraphicsFragment extends Fragment {
@@ -68,7 +69,7 @@ public class GraphicsFragment extends Fragment {
         public  int height;
         private Bitmap  mBitmap;
         private Canvas  mCanvas;
-        private Path    mPath;
+        private SerializablePath    mPath;
         private Paint   mBitmapPaint;
         Context context;
         private Paint circlePaint;
@@ -77,10 +78,10 @@ public class GraphicsFragment extends Fragment {
         public DrawingView(Context c) {
             super(c);
             context=c;
-            mPath = new Path();
+            mPath = new SerializablePath();
             mBitmapPaint = new Paint(Paint.DITHER_FLAG);
             circlePaint = new Paint();
-            circlePath = new Path();
+            circlePath = new SerializablePath();
             circlePaint.setAntiAlias(true);
             circlePaint.setColor(Color.BLUE);
             circlePaint.setStyle(Paint.Style.STROKE);

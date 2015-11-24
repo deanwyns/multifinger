@@ -247,6 +247,7 @@ public class DrawingActivity extends AppCompatActivity {
                     mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
+                    e.printStackTrace();
                     break;
                 }
             }
