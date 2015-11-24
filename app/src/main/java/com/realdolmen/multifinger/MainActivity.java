@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,9 @@ public class MainActivity extends Activity {
 
     @Bind(R.id.hostButton)
     Button hostButton;
+
+    @Bind(R.id.button)
+    Button button;
 
     private BluetoothAdapter mBluetoothAdapter;
     private Handler mHandler;
@@ -94,6 +98,13 @@ public class MainActivity extends Activity {
             }
         });
 
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connectedThread.write(new byte[] { 0x10, 0x11, 0x12 });
+            }
+        });
+
         final List<DeviceEntry> deviceEntries = new ArrayList<>();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         for(BluetoothDevice bluetoothDevice : pairedDevices) {
@@ -122,14 +133,16 @@ public class MainActivity extends Activity {
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == MESSAGE_READ) {
-                    Toast.makeText(getApplicationContext(), "Message read", Toast.LENGTH_SHORT).show();
+                    byte[] bytes = (byte[])msg.obj;
+                    Toast.makeText(getApplicationContext(), "Message read: " + Arrays.toString(bytes) + " len: " + msg.arg1, Toast.LENGTH_SHORT).show();
                 }
             }
         };
     }
 
     private void manageConnectedSocket(BluetoothSocket socket) {
-        new ConnectedThread(socket).start();
+        connectedThread = new ConnectedThread(socket);
+        connectedThread.start();
     }
 
     private class ServerThread extends Thread {
