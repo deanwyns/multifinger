@@ -180,11 +180,4 @@ public class GraphicsFragment extends Fragment {
             return bos.toByteArray();
         }
     }
-
-    private Object convertFromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-             ObjectInput in = new ObjectInputStream(bis)) {
-            return in.readObject();
-        }
-    }
 }

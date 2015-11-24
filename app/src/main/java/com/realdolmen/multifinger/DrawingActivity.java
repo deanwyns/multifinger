@@ -14,8 +14,11 @@ import android.widget.Toast;
 
 import com.realdolmen.multifinger.bluetooth.DeviceEntry;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +88,14 @@ public class DrawingActivity extends AppCompatActivity {
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                graphicsFragment.drawStroke((StrokeDto)msg.obj);
+                StrokeDto strokeDto = null;
+                try {
+                    strokeDto = (StrokeDto)convertFromBytes((byte[])msg.obj);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                graphicsFragment.drawStroke(strokeDto);
             }
         };
     }
@@ -265,6 +275,13 @@ public class DrawingActivity extends AppCompatActivity {
             try {
                 mmSocket.close();
             } catch (IOException e) { }
+        }
+    }
+
+    private Object convertFromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+             ObjectInput in = new ObjectInputStream(bis)) {
+            return in.readObject();
         }
     }
 }
