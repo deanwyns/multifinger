@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Multifinger</string>
+    <string name="applicationName">Multifinger</string>
+    <string name="host">Host</string>
 </resources>
