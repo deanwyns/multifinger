@@ -49,9 +49,6 @@ public class MainActivity extends Activity {
     @Bind(R.id.hostButton)
     Button hostButton;
 
-    @Bind(R.id.button)
-    Button button;
-
     private BluetoothAdapter mBluetoothAdapter;
 
     @Override

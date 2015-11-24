@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -79,6 +81,13 @@ public class DrawingActivity extends AppCompatActivity {
                     new ClientThread(bluetoothDevice).start();
             }
         }
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                Toast.makeText(getApplicationContext(), Arrays.toString((byte[]) msg.obj), Toast.LENGTH_SHORT);
+            }
+        };
     }
 
     public void colorpicker() {
@@ -100,6 +109,10 @@ public class DrawingActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+    public void write(byte[] bytes) {
+        connectedThread.write(bytes);
     }
 
     private void manageConnectedSocket(BluetoothSocket socket) {

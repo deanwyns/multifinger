@@ -122,6 +122,9 @@ public class GraphicsFragment extends Fragment {
             mCanvas.drawPath(mPath,  mPaint);
             // kill this so we don't double draw
             mPath.reset();
+
+            DrawingActivity activity = (DrawingActivity)getActivity();
+            activity.write(new byte[100]);
         }
 
         @Override
