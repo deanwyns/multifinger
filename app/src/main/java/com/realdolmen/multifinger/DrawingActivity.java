@@ -85,7 +85,7 @@ public class DrawingActivity extends AppCompatActivity {
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                Toast.makeText(getApplicationContext(), Arrays.toString((byte[]) msg.obj), Toast.LENGTH_SHORT);
+                graphicsFragment.drawStroke((StrokeDto)msg.obj);
             }
         };
     }

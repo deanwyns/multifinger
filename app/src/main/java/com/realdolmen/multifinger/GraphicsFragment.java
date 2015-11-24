@@ -13,6 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+
 
 public class GraphicsFragment extends Fragment {
 
@@ -49,6 +57,11 @@ public class GraphicsFragment extends Fragment {
         mPaint.setColor(paintColor);
     }
 
+    public void drawStroke(StrokeDto strokeDto) {
+        mPaint.setColor(strokeDto.getColor());
+        dv.mCanvas.drawPath(strokeDto.getPath(), mPaint);
+        dv.invalidate();
+    }
 
     public class DrawingView extends View {
         public int width;
@@ -124,7 +137,16 @@ public class GraphicsFragment extends Fragment {
             mPath.reset();
 
             DrawingActivity activity = (DrawingActivity)getActivity();
-            activity.write(new byte[100]);
+            StrokeDto strokeDto = new StrokeDto();
+            strokeDto.setColor(mPaint.getColor());
+            strokeDto.setPath(mPath);
+            byte[] bytes;
+            try {
+                bytes = convertToBytes(strokeDto);
+                activity.write(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -147,6 +169,21 @@ public class GraphicsFragment extends Fragment {
                     break;
             }
             return true;
+        }
+    }
+
+    private byte[] convertToBytes(Object object) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutput out = new ObjectOutputStream(bos)) {
+            out.writeObject(object);
+            return bos.toByteArray();
+        }
+    }
+
+    private Object convertFromBytes(byte[] bytes) throws IOException, ClassNotFoundException {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+             ObjectInput in = new ObjectInputStream(bis)) {
+            return in.readObject();
         }
     }
 }
