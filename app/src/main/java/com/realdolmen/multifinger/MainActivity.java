@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
         final List<DeviceEntry> deviceEntries = new ArrayList<>();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         for(BluetoothDevice bluetoothDevice : pairedDevices) {
-            deviceEntries.add(new DeviceEntry(bluetoothDevice.getName(), bluetoothDevice.getAddress()));
+            deviceEntries.add(new DeviceEntry(bluetoothDevice.getName(), bluetoothDevice.getAddress(), bluetoothDevice));
         }
 
         ArrayAdapter<DeviceEntry> bluetoothDeviceArrayAdapter = new ArrayAdapter<>(this, R.layout.bluetooth_device_list_item, deviceEntries);
@@ -129,12 +129,7 @@ public class MainActivity extends Activity {
     }
 
     private void manageConnectedSocket(BluetoothSocket socket) {
-        if(connectedThread == null)
-            connectedThread = new ConnectedThread(socket);
-
-        if(!connectedThread.isAlive()) {
-            connectedThread.start();
-        }
+        new ConnectedThread(socket).start();
     }
 
     private class ServerThread extends Thread {

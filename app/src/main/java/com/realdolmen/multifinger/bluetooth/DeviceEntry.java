@@ -7,9 +7,10 @@ public class DeviceEntry {
     private String address;
     private BluetoothDevice device;
 
-    public DeviceEntry(String name, String address) {
+    public DeviceEntry(String name, String address, BluetoothDevice device) {
         this.name = name;
         this.address = address;
+        this.device = device;
     }
 
     public String getName() {
