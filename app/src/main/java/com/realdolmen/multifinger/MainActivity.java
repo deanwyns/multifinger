@@ -42,7 +42,6 @@ public class MainActivity extends Activity {
     public static final String MULTFINGER_SERVICE = "Multifinger";
 
     public static final int REQUEST_BLUETOOTH = 1;
-    public static final int MESSAGE_READ = 1;
 
     @Bind(R.id.bluetoothDevicesListView)
     ListView bluetoothDevicesListView;
@@ -54,9 +53,6 @@ public class MainActivity extends Activity {
     Button button;
 
     private BluetoothAdapter mBluetoothAdapter;
-    private Handler mHandler;
-
-    private ConnectedThread connectedThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,21 +90,16 @@ public class MainActivity extends Activity {
         hostButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new ServerThread().start();
-            }
-        });
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                connectedThread.write(new byte[] { 0x10, 0x11, 0x12 });
+                Intent intent = new Intent(getApplicationContext(), DrawingActivity.class);
+                intent.putExtra("HOST", true);
+                startActivity(intent);
             }
         });
 
         final List<DeviceEntry> deviceEntries = new ArrayList<>();
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         for(BluetoothDevice bluetoothDevice : pairedDevices) {
-            deviceEntries.add(new DeviceEntry(bluetoothDevice.getName(), bluetoothDevice.getAddress(), bluetoothDevice));
+            deviceEntries.add(new DeviceEntry(bluetoothDevice.getName(), bluetoothDevice.getAddress()));
         }
 
         ArrayAdapter<DeviceEntry> bluetoothDeviceArrayAdapter = new ArrayAdapter<>(this, R.layout.bluetooth_device_list_item, deviceEntries);
@@ -121,174 +112,10 @@ public class MainActivity extends Activity {
                 if (deviceEntry == null)
                     return;
 
-                BluetoothDevice bluetoothDevice = deviceEntry.getDevice();
-                if (bluetoothDevice == null)
-                    return;
-
-                new ClientThread(bluetoothDevice).start();
+                Intent intent = new Intent(getApplicationContext(), DrawingActivity.class);
+                intent.putExtra("BLUETOOTH_DEVICE", deviceEntry.getName());
+                startActivity(intent);
             }
         });
-
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if(msg.what == MESSAGE_READ) {
-                    byte[] bytes = (byte[])msg.obj;
-                    Toast.makeText(getApplicationContext(), "Message read: " + Arrays.toString(bytes) + " len: " + msg.arg1, Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
-    }
-
-    private void manageConnectedSocket(BluetoothSocket socket) {
-        connectedThread = new ConnectedThread(socket);
-        connectedThread.start();
-    }
-
-    private class ServerThread extends Thread {
-        private final BluetoothServerSocket mmServerSocket;
-
-        public ServerThread() {
-            // Use a temporary object that is later assigned to mmServerSocket,
-            // because mmServerSocket is final
-            BluetoothServerSocket tmp = null;
-            try {
-                // MY_UUID is the app's UUID string, also used by the client code
-                tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(MainActivity.MULTFINGER_SERVICE, MainActivity.MULTIFINGER_UUID);
-            } catch (IOException e) { }
-            mmServerSocket = tmp;
-        }
-
-        public void run() {
-            BluetoothSocket socket = null;
-            // Keep listening until exception occurs or a socket is returned
-            while (true) {
-                try {
-                    socket = mmServerSocket.accept();
-                } catch (IOException e) {
-                    break;
-                }
-                // If a connection was accepted
-                if (socket != null) {
-                    // Do work to manage the connection (in a separate thread)
-                    manageConnectedSocket(socket);
-
-                    try {
-                        mmServerSocket.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    break;
-                }
-            }
-        }
-
-        /** Will cancel the listening socket, and cause the thread to finish */
-        public void cancel() {
-            try {
-                mmServerSocket.close();
-            } catch (IOException e) { }
-        }
-    }
-
-    private class ClientThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
-
-        public ClientThread(BluetoothDevice device) {
-            // Use a temporary object that is later assigned to mmSocket,
-            // because mmSocket is final
-            BluetoothSocket tmp = null;
-            mmDevice = device;
-
-            // Get a BluetoothSocket to connect with the given BluetoothDevice
-            try {
-                // MY_UUID is the app's UUID string, also used by the server code
-                tmp = device.createRfcommSocketToServiceRecord(MainActivity.MULTIFINGER_UUID);
-            } catch (IOException e) { }
-            mmSocket = tmp;
-        }
-
-        public void run() {
-            // Cancel discovery because it will slow down the connection
-            mBluetoothAdapter.cancelDiscovery();
-
-            try {
-                // Connect the device through the socket. This will block
-                // until it succeeds or throws an exception
-                mmSocket.connect();
-            } catch (IOException connectException) {
-                // Unable to connect; close the socket and get out
-                try {
-                    mmSocket.close();
-                } catch (IOException closeException) { }
-                return;
-            }
-
-            // Do work to manage the connection (in a separate thread)
-            manageConnectedSocket(mmSocket);
-        }
-
-        /** Will cancel an in-progress connection, and close the socket */
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) { }
-        }
-    }
-
-    private class ConnectedThread extends Thread {
-        private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
-        private final OutputStream mmOutStream;
-
-        public ConnectedThread(BluetoothSocket socket) {
-            mmSocket = socket;
-            InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
-            // Get the input and output streams, using temp objects because
-            // member streams are final
-            try {
-                tmpIn = socket.getInputStream();
-                tmpOut = socket.getOutputStream();
-            } catch (IOException e) { }
-
-            mmInStream = tmpIn;
-            mmOutStream = tmpOut;
-        }
-
-        public void run() {
-            byte[] buffer = new byte[1024];  // buffer store for the stream
-            int bytes; // bytes returned from read()
-
-            // Keep listening to the InputStream until an exception occurs
-            while (true) {
-                try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI activity
-                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
-                } catch (IOException e) {
-                    break;
-                }
-            }
-        }
-
-        /* Call this from the main activity to send data to the remote device */
-        public void write(byte[] bytes) {
-            try {
-                mmOutStream.write(bytes);
-            } catch (IOException e) { }
-        }
-
-        /* Call this from the main activity to shutdown the connection */
-        public void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) { }
-        }
     }
 }
