@@ -58,10 +58,8 @@ public class GraphicsFragment extends Fragment {
         mPaint.setColor(paintColor);
     }
 
-    public void drawStroke(StrokeDto strokeDto) {
-        mPaint.setColor(strokeDto.getColor());
-        dv.mCanvas.drawPath(strokeDto.getPath(), mPaint);
-        dv.invalidate();
+    public DrawingView getDv() {
+        return dv;
     }
 
     public class DrawingView extends View {
@@ -116,7 +114,7 @@ public class GraphicsFragment extends Fragment {
             mY = y;
         }
 
-        private void touch_move(float x, float y) {
+        public void touch_move(float x, float y) {
             float dx = Math.abs(x - mX);
             float dy = Math.abs(y - mY);
             if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
@@ -126,6 +124,18 @@ public class GraphicsFragment extends Fragment {
 
                 circlePath.reset();
                 circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
+
+                TouchMoveDto touchMoveDto = new TouchMoveDto();
+                touchMoveDto.setX(x);
+                touchMoveDto.setY(y);
+                byte[] bytes;
+                try {
+                    bytes = convertToBytes(touchMoveDto);
+                    DrawingActivity activity = (DrawingActivity)getActivity();
+                    activity.write(bytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -133,21 +143,9 @@ public class GraphicsFragment extends Fragment {
             mPath.lineTo(mX, mY);
             circlePath.reset();
             // commit the path to our offscreen
-            mCanvas.drawPath(mPath,  mPaint);
+            mCanvas.drawPath(mPath, mPaint);
             // kill this so we don't double draw
             mPath.reset();
-
-            DrawingActivity activity = (DrawingActivity)getActivity();
-            StrokeDto strokeDto = new StrokeDto();
-            strokeDto.setColor(mPaint.getColor());
-            strokeDto.setPath(mPath);
-            byte[] bytes;
-            try {
-                bytes = convertToBytes(strokeDto);
-                activity.write(bytes);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
         @Override

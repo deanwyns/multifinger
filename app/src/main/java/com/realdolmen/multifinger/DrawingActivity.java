@@ -88,14 +88,12 @@ public class DrawingActivity extends AppCompatActivity {
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                StrokeDto strokeDto = null;
                 try {
-                    strokeDto = (StrokeDto)convertFromBytes((byte[])msg.obj);
+                    TouchMoveDto touchMoveDto = (TouchMoveDto)convertFromBytes((byte[])msg.obj);
+                    graphicsFragment.dv.touch_move(touchMoveDto.getX(), touchMoveDto.getY());
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-
-                graphicsFragment.drawStroke(strokeDto);
             }
         };
     }
