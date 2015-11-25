@@ -9,6 +9,7 @@ import com.realdolmen.multifinger.connection.Connection;
 import com.realdolmen.multifinger.connection.Device;
 import com.realdolmen.multifinger.connection.ServerCallback;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +50,14 @@ public class BluetoothConnection implements Connection {
     }
 
     @Override
-    public void write(byte[] bytes) {
+    public void write(Connection.Commands command, byte[] bytes) {
         if(connectionThread == null)
             return;
 
-        connectionThread.write(bytes);
+        ByteBuffer buffer = ByteBuffer.allocate(bytes.length + 1);
+        buffer.put((byte)command.ordinal());
+        buffer.put(bytes);
+        connectionThread.write(buffer.array());
     }
 
     @Override

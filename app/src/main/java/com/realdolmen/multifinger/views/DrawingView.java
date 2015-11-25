@@ -5,8 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
-import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,6 +47,8 @@ public class DrawingView extends View {
     public void clearScreen(){
         mCompletedPaths.clear();
         invalidate();
+
+        connection.write(Connection.Commands.CLEAR, new byte[1]);
     }
 
     @Override
@@ -99,10 +99,10 @@ public class DrawingView extends View {
         mPaint.setColor(color);
         mPaint.setStrokeWidth(strokeDto.getWidth());
 
-        if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) && id < MAX_FINGERS * 2) {
+        if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) && id >= MAX_FINGERS && id < MAX_FINGERS * 2) {
             mFingerPaths[id] = new Path();
             mFingerPaths[id].moveTo(x, y);
-        } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS * 2) {
+        } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id >= MAX_FINGERS && id < MAX_FINGERS * 2) {
             if(mFingerPaths[id] != null) {
                 mFingerPaths[id].setLastPoint(x, y);
                 StrokeDto currentStrokeDto = new StrokeDto();
@@ -122,7 +122,7 @@ public class DrawingView extends View {
     }
 
     private void sendStroke(StrokeDto strokeDto) {
-        connection.write(conversionUtil.toBytes(strokeDto));
+        connection.write(Connection.Commands.STROKE_DRAWN, conversionUtil.toBytes(strokeDto));
     }
 
     @Override

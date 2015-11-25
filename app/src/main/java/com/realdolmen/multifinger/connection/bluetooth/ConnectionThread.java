@@ -2,13 +2,11 @@ package com.realdolmen.multifinger.connection.bluetooth;
 
 import android.bluetooth.BluetoothSocket;
 
-import com.realdolmen.multifinger.connection.Connection;
 import com.realdolmen.multifinger.connection.ConnectionCallback;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 
 /**
  * Created by DWSAX40 on 25/11/2015.
@@ -38,7 +36,7 @@ public class ConnectionThread extends Thread {
     }
 
     public void run() {
-        byte[] buffer = new byte[90];  // buffer store for the stream
+        byte[] buffer = new byte[95];  // buffer store for the stream
         int bytes; // bytes returned from read()
 
         // Keep listening to the InputStream until an exception occurs
