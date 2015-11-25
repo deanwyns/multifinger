@@ -24,18 +24,19 @@ public class ConnectionThread extends Thread {
         this.callback = callback;
 
         mmSocket = socket;
-        ObjectInputStream tmpIn = null;
         ObjectOutputStream tmpOut = null;
+        ObjectInputStream tmpIn = null;
 
         // Get the input and output streams, using temp objects because
         // member streams are final
         try {
-            tmpIn = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
             tmpOut = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            tmpOut.flush();
+            tmpIn = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
         } catch (IOException e) { e.printStackTrace(); }
 
-        mmInStream = tmpIn;
         mmOutStream = tmpOut;
+        mmInStream = tmpIn;
     }
 
     public void run() {
