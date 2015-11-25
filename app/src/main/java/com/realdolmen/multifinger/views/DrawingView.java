@@ -85,7 +85,7 @@ public class DrawingView extends View {
 
     public void drawOpponentStroke(StrokeDto strokeDto) {
         int action = strokeDto.getEvent();
-        int id = strokeDto.getFinger() * 2;
+        int id = strokeDto.getFinger() + MAX_FINGERS;
         float x = strokeDto.getX();
         float y = strokeDto.getY();
         // dp to px
