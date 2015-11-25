@@ -36,6 +36,8 @@ public class MainActivity extends Activity {
 
     @Bind(R.id.hostButton)
     Button hostButton;
+    @Bind(R.id.singlePlayerButton)
+    Button singlePlayerButton;
 
     private BluetoothAdapter mBluetoothAdapter;
 
@@ -49,6 +51,14 @@ public class MainActivity extends Activity {
 
         // Butter Knife injection
         ButterKnife.bind(this);
+
+        singlePlayerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent drawingIntent = new Intent(getApplicationContext(), DrawingActivity.class);
+                startActivity(drawingIntent);
+            }
+        });
 
         // Find bluetooth devices
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

@@ -66,34 +66,37 @@ public class DrawingActivity extends AppCompatActivity {
         });
 
         Bundle extras = getIntent().getExtras();
-        if(extras.getBoolean("HOST")) {
-            new ServerThread().start();
-        } else {
-            String bluetoothDeviceName = extras.getString("BLUETOOTH_DEVICE");
-            if(bluetoothDeviceName != null) {
-                BluetoothDevice bluetoothDevice = null;
-                Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-                for(BluetoothDevice device : devices) {
-                    if(device.getName().equals(bluetoothDeviceName))
-                        bluetoothDevice = device;
+        if(extras != null){
+            if(extras.getBoolean("HOST")) {
+                new ServerThread().start();
+            } else {
+                String bluetoothDeviceName = extras.getString("BLUETOOTH_DEVICE");
+                if(bluetoothDeviceName != null) {
+                    BluetoothDevice bluetoothDevice = null;
+                    Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
+                    for(BluetoothDevice device : devices) {
+                        if(device.getName().equals(bluetoothDeviceName))
+                            bluetoothDevice = device;
+                    }
+
+                    if(bluetoothDevice != null)
+                        new ClientThread(bluetoothDevice).start();
                 }
-
-                if(bluetoothDevice != null)
-                    new ClientThread(bluetoothDevice).start();
             }
-        }
 
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
+            mHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
                 /*try {
                     TouchMoveDto touchMoveDto = (TouchMoveDto)convertFromBytes((byte[])msg.obj);
                     graphicsFragment.dv.touch_move(touchMoveDto.getX(), touchMoveDto.getY());
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }*/
-            }
-        };
+                }
+            };
+        }
+
     }
 
     public void colorpicker() {

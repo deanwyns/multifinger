@@ -36,4 +36,12 @@
         android:id="@+id/hostButton"
         android:layout_below="@+id/appName"
         android:layout_marginBottom="20dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Single Player"
+        android:id="@+id/singlePlayerButton"
+        android:layout_below="@+id/appName"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>
