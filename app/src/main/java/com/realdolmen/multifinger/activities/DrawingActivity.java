@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.google.inject.Inject;
@@ -14,6 +15,7 @@ import com.realdolmen.multifinger.connection.Device;
 import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 import com.realdolmen.multifinger.fragments.GraphicsFragment;
+import com.realdolmen.multifinger.views.DrawingView;
 
 import java.nio.ByteBuffer;
 
@@ -23,15 +25,18 @@ import roboguice.inject.InjectView;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
 @ContentView(R.layout.activity_drawing)
-public class DrawingActivity extends RoboActivity {
+public class DrawingActivity extends RoboActivity implements NumberPicker.OnValueChangeListener {
     public static final int MESSAGE_READ = 1;
 
     @InjectView(R.id.clearButton)
-    Button clearButton;
+    private Button clearButton;
     @InjectView(R.id.colorPickerButton)
-    Button colorPickerButton;
+    private Button colorPickerButton;
     //@InjectFragment(R.id.drawingFragment)
     private GraphicsFragment graphicsFragment;
+    @InjectView(R.id.widthNumberPicker)
+    private NumberPicker widthNumberPicker;
+
 
     @Inject
     private Connection connection;
@@ -43,6 +48,12 @@ public class DrawingActivity extends RoboActivity {
         super.onCreate(savedInstanceState);
 
         graphicsFragment = (GraphicsFragment)getFragmentManager().findFragmentById(R.id.drawingFragment);
+
+        widthNumberPicker.setMaxValue(127);
+        widthNumberPicker.setMinValue(1);
+        widthNumberPicker.setWrapSelectorWheel(false);
+        widthNumberPicker.setValue(DrawingView.strokeWidth);
+        widthNumberPicker.setOnValueChangedListener(this);
 
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,9 +112,13 @@ public class DrawingActivity extends RoboActivity {
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
                 graphicsFragment.setPaintColor(color);
-                Toast.makeText(getBaseContext(), "Selected Color : " + color, Toast.LENGTH_LONG).show();
             }
         });
         dialog.show();
+    }
+
+    @Override
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+        graphicsFragment.setStrokeWidth(newVal);
     }
 }

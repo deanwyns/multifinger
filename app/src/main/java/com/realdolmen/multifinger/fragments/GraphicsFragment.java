@@ -51,4 +51,8 @@ public class GraphicsFragment extends Fragment {
     public void drawOpponentStroke(StrokeDto strokeDto) {
         dv.drawOpponentStroke(strokeDto);
     }
+
+    public void setStrokeWidth(int strokeWidth) {
+        dv.setStrokeWidth(strokeWidth);
+    }
 }
