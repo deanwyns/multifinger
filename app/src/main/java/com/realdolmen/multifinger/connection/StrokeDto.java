@@ -64,4 +64,15 @@ public class StrokeDto {
     public void setFinger(byte finger) {
         this.finger = finger;
     }
+
+    @Override
+    public String toString() {
+        return "StrokeDto{" +
+                "finger=" + finger +
+                ", x=" + x +
+                ", y=" + y +
+                ", width=" + width +
+                ", event=" + event +
+                '}';
+    }
 }

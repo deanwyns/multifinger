@@ -56,16 +56,10 @@ public class ConnectionThread extends Thread {
     }
 
     /* Call this from the main activity to send data to the remote device */
-    private ByteBuffer writeBuffer = ByteBuffer.allocate(90);
     public void write(byte[] bytes) {
-        if(writeBuffer.position() == 90) {
-            try {
-                mmOutStream.write(writeBuffer.array());
-                writeBuffer = ByteBuffer.allocate(90);
-            } catch (IOException e) { }
-        } else {
-            writeBuffer.put(bytes);
-        }
+        try {
+            mmOutStream.write(bytes);
+        } catch (IOException e) { }
     }
 
     /* Call this from the main activity to shutdown the connection */

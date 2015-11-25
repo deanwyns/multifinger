@@ -3,6 +3,7 @@ package com.realdolmen.multifinger.activities;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -93,6 +94,7 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
         for(int i = 0; i < bytes.length; i += 18) {
             ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 18);
             StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
+            Log.i("Multifinger", strokeDto.toString());
             graphicsFragment.drawOpponentStroke(strokeDto);
         }
     }
