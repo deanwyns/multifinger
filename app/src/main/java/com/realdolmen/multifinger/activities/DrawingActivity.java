@@ -86,12 +86,12 @@ public class DrawingActivity extends AppCompatActivity {
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                try {
+                /*try {
                     TouchMoveDto touchMoveDto = (TouchMoveDto)convertFromBytes((byte[])msg.obj);
                     graphicsFragment.dv.touch_move(touchMoveDto.getX(), touchMoveDto.getY());
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
         };
     }
