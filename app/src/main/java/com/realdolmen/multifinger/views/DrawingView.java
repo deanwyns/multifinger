@@ -93,7 +93,7 @@ public class DrawingView extends View {
         float density = getResources().getDisplayMetrics().density;
         x *= density;
         y *= density;
-Log.i("Multifinger", "Finger " + id);
+
         int color = strokeDto.getColor();
 
         mPaint.setColor(color);
@@ -182,7 +182,7 @@ Log.i("Multifinger", "Finger " + id);
                 strokeDto.setY(y);
 
                 strokeDto.setEvent(action);
-                strokeDto.setFinger((byte) id);
+                strokeDto.setFinger((byte) i);
                 strokeDto.setColor(mPaint.getColor());
                 strokeDto.setWidth((byte)mPaint.getStrokeWidth());
                 sendStroke(strokeDto);
