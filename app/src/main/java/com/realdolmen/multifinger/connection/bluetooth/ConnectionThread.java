@@ -6,10 +6,8 @@ import com.realdolmen.multifinger.connection.ConnectionCallback;
 import com.realdolmen.multifinger.connection.NetworkCommand;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
 /**
  * Created by DWSAX40 on 25/11/2015.
@@ -62,9 +60,9 @@ public class ConnectionThread extends Thread {
     }
 
     /* Call this from the main activity to send data to the remote device */
-    public void write(byte[] bytes) {
+    public void write(Object object) {
         try {
-            mmOutStream.write(bytes);
+            mmOutStream.writeObject(object);
         } catch (IOException e) { }
     }
 

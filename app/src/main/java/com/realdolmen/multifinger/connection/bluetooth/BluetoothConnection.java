@@ -52,14 +52,11 @@ public class BluetoothConnection implements Connection {
     }
 
     @Override
-    public void write(Connection.Commands command, byte[] bytes) {
+    public void write(NetworkCommand command) {
         if(connectionThread == null)
             return;
 
-        ByteBuffer buffer = ByteBuffer.allocate(bytes.length + 1);
-        buffer.put((byte)command.ordinal());
-        buffer.put(bytes);
-        connectionThread.write(buffer.array());
+        connectionThread.write(command);
     }
 
     @Override

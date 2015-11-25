@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.google.inject.Inject;
 import com.realdolmen.multifinger.connection.Connection;
+import com.realdolmen.multifinger.connection.NetworkCommand;
 import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 
@@ -50,7 +51,8 @@ public class DrawingView extends View {
         mFingerPaths = new Path[MAX_FINGERS * 2];
         invalidate();
 
-        connection.write(Connection.Commands.CLEAR, new byte[18]);
+        //connection.write(Connection.Commands.CLEAR, new byte[18]);
+
     }
 
     @Override
@@ -124,7 +126,11 @@ public class DrawingView extends View {
     }
 
     private void sendStroke(StrokeDto strokeDto) {
-        connection.write(Connection.Commands.STROKE_DRAWN, conversionUtil.toBytes(strokeDto));
+        //connection.write(Connection.Commands.STROKE_DRAWN, conversionUtil.toBytes(strokeDto));
+        NetworkCommand command = new NetworkCommand();
+        command.setCommand(Connection.Commands.STROKE_DRAWN);
+        command.setDto(strokeDto);
+        connection.write(command);
     }
 
     @Override

@@ -17,7 +17,7 @@ public interface Connection {
     void connect(Device device, Handler dataHandler);
     void host(Handler dataHandler);
 
-    void write(Connection.Commands command, byte[] bytes);
+    void write(NetworkCommand command);
 
     List<Device> getUsers();
 }
