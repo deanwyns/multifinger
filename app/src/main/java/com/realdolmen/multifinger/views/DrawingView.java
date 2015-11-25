@@ -28,7 +28,7 @@ public class DrawingView extends View {
     public static int strokeWidth = 12;
     public static final int MAX_FINGERS = 5;
     private Path[] mFingerPaths = new Path[MAX_FINGERS * 2];
-    private ArrayList<Pair<Path, Integer>> mCompletedPaths;
+    private ArrayList<Pair<Path, StrokeDto>> mCompletedPaths;
     private Paint mPaint;
 
     public DrawingView(Context c) {
@@ -67,10 +67,13 @@ public class DrawingView extends View {
         super.onDraw(canvas);
 
         int originalColor = mPaint.getColor();
+        float originalWidth = mPaint.getStrokeWidth();
         for (Pair completedPath : mCompletedPaths) {
-            mPaint.setColor((Integer) completedPath.second);
+            mPaint.setColor(((StrokeDto) completedPath.second).getColor());
+            mPaint.setStrokeWidth(((StrokeDto) completedPath.second).getWidth());
             canvas.drawPath((Path) completedPath.first, mPaint);
         }
+        mPaint.setStrokeWidth(originalWidth);
         mPaint.setColor(originalColor);
 
         for (Path fingerPath : mFingerPaths) {
@@ -95,7 +98,10 @@ public class DrawingView extends View {
             mFingerPaths[id].moveTo(x, y);
         } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS * 2) {
             mFingerPaths[id].setLastPoint(x, y);
-            mCompletedPaths.add(new Pair<>(mFingerPaths[id], color));
+            StrokeDto currentStrokeDto = new StrokeDto();
+            currentStrokeDto.setColor(color);
+            currentStrokeDto.setWidth((byte) mPaint.getStrokeWidth());
+            mCompletedPaths.add(new Pair<>(mFingerPaths[id], currentStrokeDto));
 
             invalidate();
             mFingerPaths[id] = null;
@@ -124,7 +130,10 @@ public class DrawingView extends View {
             mFingerPaths[id].moveTo(event.getX(actionIndex), event.getY(actionIndex));
         } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS) {
             mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
-            mCompletedPaths.add(new Pair<>(mFingerPaths[id], mPaint.getColor()));
+            StrokeDto currentStrokeDto = new StrokeDto();
+            currentStrokeDto.setColor(mPaint.getColor());
+            currentStrokeDto.setWidth((byte) mPaint.getStrokeWidth());
+            mCompletedPaths.add(new Pair<>(mFingerPaths[id], currentStrokeDto));
             invalidate();
             mFingerPaths[id] = null;
         }
