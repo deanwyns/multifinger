@@ -1,20 +1,19 @@
 package com.realdolmen.multifinger.activities;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.inject.Inject;
-import com.realdolmen.multifinger.R;
-import com.realdolmen.multifinger.connection.Connection;
-import com.realdolmen.multifinger.connection.Device;
 import com.realdolmen.multifinger.fragments.GraphicsFragment;
+import com.realdolmen.multifinger.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,6 +21,7 @@ import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
+import java.util.Set;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;

@@ -2,26 +2,24 @@ package com.realdolmen.multifinger.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.os.Bundle;
-import android.graphics.*;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.realdolmen.multifinger.activities.DrawingActivity;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 
 public class GraphicsFragment extends Fragment {
 
     public DrawingView dv;
-    private Paint mPaint;
 
     @Nullable
     @Override
@@ -33,131 +31,99 @@ public class GraphicsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
-        mPaint.setColor(Color.GREEN);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(12);
     }
 
     public void clearView(){
-        dv.mCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        dv.invalidate();
+        dv.clearScreen();
     }
 
     public void setPaintColor(int paintColor) {
-        mPaint.setColor(paintColor);
+        dv.setColor(paintColor);
     }
 
-    public DrawingView getDv() {
-        return dv;
-    }
 
     public class DrawingView extends View {
-        public int width;
-        public  int height;
-        private Bitmap  mBitmap;
-        private Canvas  mCanvas;
-        private Path mPath;
-        private Paint   mBitmapPaint;
-        Context context;
-        private Paint circlePaint;
-        private Path circlePath;
+        public static final int MAX_FINGERS = 5;
+        private Path[] mFingerPaths = new Path[MAX_FINGERS];
+        private ArrayList<Path> mCompletedPaths;
+        private RectF mPathBounds = new RectF();
+        private Paint mPaint;
 
         public DrawingView(Context c) {
             super(c);
-            context=c;
-            mPath = new Path();
-            mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-            circlePaint = new Paint();
-            circlePath = new Path();
-            circlePaint.setAntiAlias(true);
-            circlePaint.setColor(Color.BLUE);
-            circlePaint.setStyle(Paint.Style.STROKE);
-            circlePaint.setStrokeJoin(Paint.Join.MITER);
-            circlePaint.setStrokeWidth(4f);
         }
 
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
+        }
 
-            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            mCanvas = new Canvas(mBitmap);
+        public void setColor(int paintColor){
+            mPaint.setColor(paintColor);
+        }
+
+        public void clearScreen(){
+            mCompletedPaths.clear();
+            invalidate();
+        }
+
+        @Override
+        protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+            mCompletedPaths = new ArrayList<>();
+            mPaint = new Paint();
+            mPaint.setAntiAlias(true);
+            mPaint.setColor(Color.BLACK);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(12);
+            mPaint.setStrokeCap(Paint.Cap.BUTT);
         }
 
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            canvas.drawBitmap( mBitmap, 0, 0, mBitmapPaint);
-            canvas.drawPath( mPath,  mPaint);
-            canvas.drawPath( circlePath,  circlePaint);
-        }
-
-        private float mX, mY;
-        private static final float TOUCH_TOLERANCE = 4;
-
-        private void touch_start(float x, float y) {
-            mPath.reset();
-            mPath.moveTo(x, y);
-            mX = x;
-            mY = y;
-        }
-
-        public void touch_move(float x, float y) {
-            float dx = Math.abs(x - mX);
-            float dy = Math.abs(y - mY);
-            if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-                mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
-                mX = x;
-                mY = y;
-
-                circlePath.reset();
-                circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
-
-                /*byte[] bytes;
-                try {
-                    bytes = convertToBytes(touchMoveDto);
-                    DrawingActivity activity = (DrawingActivity)getActivity();
-                    activity.write(bytes);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
+            for (Path completedPath : mCompletedPaths) {
+                canvas.drawPath(completedPath, mPaint);
             }
-        }
 
-        private void touch_up() {
-            mPath.lineTo(mX, mY);
-            circlePath.reset();
-            // commit the path to our offscreen
-            mCanvas.drawPath(mPath, mPaint);
-            // kill this so we don't double draw
-            mPath.reset();
+            for (Path fingerPath : mFingerPaths) {
+                if (fingerPath != null) {
+                    canvas.drawPath(fingerPath, mPaint);
+                }
+            }
         }
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            float x = event.getX();
-            float y = event.getY();
+            int pointerCount = event.getPointerCount();
+            int cappedPointerCount = pointerCount > MAX_FINGERS ? MAX_FINGERS : pointerCount;
+            int actionIndex = event.getActionIndex();
+            int action = event.getActionMasked();
+            int id = event.getPointerId(actionIndex);
 
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    touch_start(x, y);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    touch_move(x, y);
-                    invalidate();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    touch_up();
-                    invalidate();
-                    break;
+            if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) && id < MAX_FINGERS) {
+                mFingerPaths[id] = new Path();
+                mFingerPaths[id].moveTo(event.getX(actionIndex), event.getY(actionIndex));
+            } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS) {
+                mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
+                mCompletedPaths.add(mFingerPaths[id]);
+                mFingerPaths[id].computeBounds(mPathBounds, true);
+                invalidate((int) mPathBounds.left, (int) mPathBounds.top,
+                        (int) mPathBounds.right, (int) mPathBounds.bottom);
+                mFingerPaths[id] = null;
             }
+
+            for(int i = 0; i < cappedPointerCount; i++) {
+                if(mFingerPaths[i] != null) {
+                    int index = event.findPointerIndex(i);
+                    mFingerPaths[i].lineTo(event.getX(index), event.getY(index));
+                    mFingerPaths[i].computeBounds(mPathBounds, true);
+                    invalidate((int) mPathBounds.left, (int) mPathBounds.top,
+                            (int) mPathBounds.right, (int) mPathBounds.bottom);
+                }
+            }
+
             return true;
         }
     }
