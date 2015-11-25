@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,7 +46,7 @@ public class GraphicsFragment extends Fragment {
     public class DrawingView extends View {
         public static final int MAX_FINGERS = 5;
         private Path[] mFingerPaths = new Path[MAX_FINGERS];
-        private ArrayList<Path> mCompletedPaths;
+        private ArrayList<Pair<Path, Integer>> mCompletedPaths;
         private RectF mPathBounds = new RectF();
         private Paint mPaint;
 
@@ -83,9 +84,12 @@ public class GraphicsFragment extends Fragment {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            for (Path completedPath : mCompletedPaths) {
-                canvas.drawPath(completedPath, mPaint);
+            int originalColor = mPaint.getColor();
+            for (Pair completedPath : mCompletedPaths) {
+                mPaint.setColor((Integer) completedPath.second);
+                canvas.drawPath((Path) completedPath.first, mPaint);
             }
+            mPaint.setColor(originalColor);
 
             for (Path fingerPath : mFingerPaths) {
                 if (fingerPath != null) {
@@ -107,7 +111,7 @@ public class GraphicsFragment extends Fragment {
                 mFingerPaths[id].moveTo(event.getX(actionIndex), event.getY(actionIndex));
             } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS) {
                 mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
-                mCompletedPaths.add(mFingerPaths[id]);
+                mCompletedPaths.add(new Pair<>(mFingerPaths[id], mPaint.getColor()));
                 mFingerPaths[id].computeBounds(mPathBounds, true);
                 invalidate((int) mPathBounds.left, (int) mPathBounds.top,
                         (int) mPathBounds.right, (int) mPathBounds.bottom);
