@@ -10,17 +10,32 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.inject.Inject;
+import com.realdolmen.multifinger.connection.Connection;
+import com.realdolmen.multifinger.connection.StrokeDto;
+import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
+
 import java.util.ArrayList;
 
+import roboguice.RoboGuice;
+
 public class DrawingView extends View {
+    @Inject
+    private Connection connection;
+    @Inject
+    private ConversionUtil conversionUtil;
+
+    private byte[] buffer = new byte[90];
+
     public static final int MAX_FINGERS = 5;
-    private Path[] mFingerPaths = new Path[MAX_FINGERS];
+    private Path[] mFingerPaths = new Path[MAX_FINGERS * 2];
     private ArrayList<Pair<Path, Integer>> mCompletedPaths;
-    private RectF mPathBounds = new RectF();
+    //private RectF mPathBounds = new RectF();
     private Paint mPaint;
 
     public DrawingView(Context c) {
         super(c);
+        RoboGuice.getInjector(getContext()).injectMembers(this);
     }
 
     @Override
@@ -67,6 +82,34 @@ public class DrawingView extends View {
         }
     }
 
+    public void drawOpponentStroke(StrokeDto strokeDto) {
+        int action = strokeDto.getEvent();
+        int id = strokeDto.getFinger() * 2;
+        float x = strokeDto.getX();
+        float y = strokeDto.getY();
+        int color = strokeDto.getColor();
+
+        if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) && id < MAX_FINGERS * 2) {
+            mFingerPaths[id] = new Path();
+            mFingerPaths[id].moveTo(x, y);
+        } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS * 2) {
+            mFingerPaths[id].setLastPoint(x, y);
+            mCompletedPaths.add(new Pair<>(mFingerPaths[id], color));
+
+            invalidate();
+            mFingerPaths[id] = null;
+        }
+
+        if(mFingerPaths[id] != null) {
+            mFingerPaths[id].lineTo(x, y);
+            invalidate();
+        }
+    }
+
+    private void sendStroke(StrokeDto strokeDto) {
+        connection.write(conversionUtil.toBytes(strokeDto));
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int pointerCount = event.getPointerCount();
@@ -81,19 +124,41 @@ public class DrawingView extends View {
         } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS) {
             mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
             mCompletedPaths.add(new Pair<>(mFingerPaths[id], mPaint.getColor()));
-            mFingerPaths[id].computeBounds(mPathBounds, true);
+            /*mFingerPaths[id].computeBounds(mPathBounds, true);
             invalidate((int) mPathBounds.left, (int) mPathBounds.top,
-                    (int) mPathBounds.right, (int) mPathBounds.bottom);
+                    (int) mPathBounds.right, (int) mPathBounds.bottom);*/
+            invalidate();
             mFingerPaths[id] = null;
+        }
+
+        if((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) ||
+                (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP)) {
+            StrokeDto strokeDto = new StrokeDto();
+            strokeDto.setX(event.getX(actionIndex));
+            strokeDto.setY(event.getY(actionIndex));
+            strokeDto.setEvent(action);
+            strokeDto.setFinger((byte) id);
+            strokeDto.setColor(mPaint.getColor());
+            sendStroke(strokeDto);
         }
 
         for(int i = 0; i < cappedPointerCount; i++) {
             if(mFingerPaths[i] != null) {
                 int index = event.findPointerIndex(i);
                 mFingerPaths[i].lineTo(event.getX(index), event.getY(index));
-                mFingerPaths[i].computeBounds(mPathBounds, true);
+                /*mFingerPaths[i].computeBounds(mPathBounds, true);
                 invalidate((int) mPathBounds.left, (int) mPathBounds.top,
-                        (int) mPathBounds.right, (int) mPathBounds.bottom);
+                        (int) mPathBounds.right, (int) mPathBounds.bottom);*/
+                invalidate();
+
+
+                StrokeDto strokeDto = new StrokeDto();
+                strokeDto.setX(event.getX(index));
+                strokeDto.setY(event.getY(index));
+                strokeDto.setEvent(action);
+                strokeDto.setFinger((byte) id);
+                strokeDto.setColor(mPaint.getColor());
+                sendStroke(strokeDto);
             }
         }
 

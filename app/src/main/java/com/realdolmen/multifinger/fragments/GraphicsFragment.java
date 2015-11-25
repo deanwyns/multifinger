@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.realdolmen.multifinger.R;
+import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.views.DrawingView;
 
 import java.util.ArrayList;
@@ -45,5 +46,9 @@ public class GraphicsFragment extends Fragment {
 
     public void setPaintColor(int paintColor) {
         dv.setColor(paintColor);
+    }
+
+    public void drawOpponentStroke(StrokeDto strokeDto) {
+        dv.drawOpponentStroke(strokeDto);
     }
 }
