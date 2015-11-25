@@ -44,9 +44,6 @@ public class MainActivity extends RoboActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Remove title bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         singlePlayerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,5 +82,13 @@ public class MainActivity extends RoboActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        // Remove title bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        super.setContentView(layoutResID);
     }
 }

@@ -15,6 +15,7 @@ import com.realdolmen.multifinger.fragments.GraphicsFragment;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
+import roboguice.inject.InjectFragment;
 import roboguice.inject.InjectView;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -26,7 +27,7 @@ public class DrawingActivity extends RoboActivity {
     Button clearButton;
     @InjectView(R.id.colorPickerButton)
     Button colorPickerButton;
-    @InjectView(R.id.drawingFragment)
+    @InjectFragment(R.id.drawingFragment)
     private GraphicsFragment graphicsFragment;
 
     @Inject
