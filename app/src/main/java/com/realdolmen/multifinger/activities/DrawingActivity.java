@@ -102,7 +102,7 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
                 case STROKE_DRAWN:
                     byte[] strokeData = new byte[18];
                     buffer.position(1);
-                    buffer.get(strokeData, 1, 18);
+                    buffer.get(strokeData, 0, 18);
                     StrokeDto strokeDto = conversionUtil.fromBytes(strokeData);
                     graphicsFragment.drawOpponentStroke(strokeDto);
                     break;
