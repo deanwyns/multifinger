@@ -91,10 +91,19 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
     }
 
     private void handleDataReceived(byte[] bytes) {
-        for(int i = 0; i < bytes.length; i += 18) {
+        for(int i = 0; i < bytes.length; i += 19) {
             ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 18);
-            StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
-            graphicsFragment.drawOpponentStroke(strokeDto);
+            Connection.Commands command = Connection.Commands.values()[buffer.get(0)];
+            switch(command) {
+                case CLEAR:
+                    graphicsFragment.clearView();
+                    break;
+
+                case STROKE_DRAWN:
+                    StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
+                    graphicsFragment.drawOpponentStroke(strokeDto);
+                    break;
+            }
         }
     }
 
