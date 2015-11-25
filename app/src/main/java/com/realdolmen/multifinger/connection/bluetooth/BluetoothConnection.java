@@ -3,6 +3,7 @@ package com.realdolmen.multifinger.connection.bluetooth;
 import android.bluetooth.BluetoothAdapter;
 import android.os.Handler;
 
+import com.google.inject.Singleton;
 import com.realdolmen.multifinger.connection.ClientCallback;
 import com.realdolmen.multifinger.connection.Connection;
 import com.realdolmen.multifinger.connection.Device;
@@ -11,6 +12,7 @@ import com.realdolmen.multifinger.connection.ServerCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class BluetoothConnection implements Connection {
     private ConnectionThread connectionThread;
     private Handler dataHandler;

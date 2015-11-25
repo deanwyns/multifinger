@@ -2,11 +2,8 @@ package com.realdolmen.multifinger.connection;
 
 import android.os.Handler;
 
-import com.google.inject.Singleton;
-
 import java.util.List;
 
-@Singleton
 public interface Connection {
     int MESSAGE_READ = 1;
 

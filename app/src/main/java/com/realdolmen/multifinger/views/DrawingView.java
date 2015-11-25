@@ -25,12 +25,9 @@ public class DrawingView extends View {
     @Inject
     private ConversionUtil conversionUtil;
 
-    private byte[] buffer = new byte[90];
-
     public static final int MAX_FINGERS = 5;
     private Path[] mFingerPaths = new Path[MAX_FINGERS * 2];
     private ArrayList<Pair<Path, Integer>> mCompletedPaths;
-    //private RectF mPathBounds = new RectF();
     private Paint mPaint;
 
     public DrawingView(Context c) {
