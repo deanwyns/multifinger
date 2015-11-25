@@ -34,7 +34,7 @@ public class ConversionUtil {
     }
 
     public byte[] toBytes(StrokeDto strokeDto) {
-        ByteBuffer buf = ByteBuffer.allocate(13);
+        ByteBuffer buf = ByteBuffer.allocate(18);
         buf.putFloat(strokeDto.getX());
         buf.putFloat(strokeDto.getY());
         buf.put(strokeDto.getWidth());

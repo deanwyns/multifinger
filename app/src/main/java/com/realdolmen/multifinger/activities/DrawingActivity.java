@@ -90,7 +90,7 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
     }
 
     private void handleDataReceived(byte[] bytes) {
-        for(int i = 0; i < bytes.length; i += 18) {
+        for(int i = bytes.length; i < 0; i -= 18) {
             ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 18);
             StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
             graphicsFragment.drawOpponentStroke(strokeDto);
