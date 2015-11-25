@@ -1,6 +1,4 @@
-package com.realdolmen.multifinger.bluetooth;
-
-import android.bluetooth.BluetoothDevice;
+package com.realdolmen.multifinger.connection.bluetooth;
 
 public class DeviceEntry {
     private String name;

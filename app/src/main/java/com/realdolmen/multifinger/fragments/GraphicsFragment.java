@@ -1,31 +1,26 @@
-package com.realdolmen.multifinger;
+package com.realdolmen.multifinger.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.graphics.*;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.io.ByteArrayInputStream;
+import com.realdolmen.multifinger.activities.DrawingActivity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 
 public class GraphicsFragment extends Fragment {
 
-    DrawingView dv ;
+    public DrawingView dv;
     private Paint mPaint;
 
     @Nullable
@@ -34,7 +29,6 @@ public class GraphicsFragment extends Fragment {
         dv = new DrawingView(getActivity());
         return dv;
     }
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -67,7 +61,7 @@ public class GraphicsFragment extends Fragment {
         public  int height;
         private Bitmap  mBitmap;
         private Canvas  mCanvas;
-        private SerializablePath    mPath;
+        private Path mPath;
         private Paint   mBitmapPaint;
         Context context;
         private Paint circlePaint;
@@ -76,10 +70,10 @@ public class GraphicsFragment extends Fragment {
         public DrawingView(Context c) {
             super(c);
             context=c;
-            mPath = new SerializablePath();
+            mPath = new Path();
             mBitmapPaint = new Paint(Paint.DITHER_FLAG);
             circlePaint = new Paint();
-            circlePath = new SerializablePath();
+            circlePath = new Path();
             circlePaint.setAntiAlias(true);
             circlePaint.setColor(Color.BLUE);
             circlePaint.setStyle(Paint.Style.STROKE);
@@ -125,17 +119,14 @@ public class GraphicsFragment extends Fragment {
                 circlePath.reset();
                 circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
 
-                TouchMoveDto touchMoveDto = new TouchMoveDto();
-                touchMoveDto.setX(x);
-                touchMoveDto.setY(y);
-                byte[] bytes;
+                /*byte[] bytes;
                 try {
                     bytes = convertToBytes(touchMoveDto);
                     DrawingActivity activity = (DrawingActivity)getActivity();
                     activity.write(bytes);
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
         }
 
@@ -168,14 +159,6 @@ public class GraphicsFragment extends Fragment {
                     break;
             }
             return true;
-        }
-    }
-
-    private byte[] convertToBytes(Object object) throws IOException {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ObjectOutput out = new ObjectOutputStream(bos)) {
-            out.writeObject(object);
-            return bos.toByteArray();
         }
     }
 }

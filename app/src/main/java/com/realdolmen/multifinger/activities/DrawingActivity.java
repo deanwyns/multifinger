@@ -1,4 +1,4 @@
-package com.realdolmen.multifinger;
+package com.realdolmen.multifinger.activities;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,7 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.realdolmen.multifinger.bluetooth.DeviceEntry;
+import com.realdolmen.multifinger.fragments.GraphicsFragment;
+import com.realdolmen.multifinger.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,9 +21,6 @@ import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import butterknife.Bind;
