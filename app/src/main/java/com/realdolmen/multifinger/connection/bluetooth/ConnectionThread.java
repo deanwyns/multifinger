@@ -8,6 +8,7 @@ import com.realdolmen.multifinger.connection.ConnectionCallback;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Created by DWSAX40 on 25/11/2015.
@@ -37,7 +38,7 @@ public class ConnectionThread extends Thread {
     }
 
     public void run() {
-        byte[] buffer = new byte[300];  // buffer store for the stream
+        byte[] buffer = new byte[90];  // buffer store for the stream
         int bytes; // bytes returned from read()
 
         // Keep listening to the InputStream until an exception occurs
@@ -55,10 +56,16 @@ public class ConnectionThread extends Thread {
     }
 
     /* Call this from the main activity to send data to the remote device */
+    private ByteBuffer writeBuffer = ByteBuffer.allocate(90);
     public void write(byte[] bytes) {
-        try {
-            mmOutStream.write(bytes);
-        } catch (IOException e) { }
+        if(writeBuffer.position() == 90) {
+            try {
+                mmOutStream.write(writeBuffer.array());
+                writeBuffer = ByteBuffer.allocate(90);
+            } catch (IOException e) { }
+        } else {
+            writeBuffer.put(bytes);
+        }
     }
 
     /* Call this from the main activity to shutdown the connection */

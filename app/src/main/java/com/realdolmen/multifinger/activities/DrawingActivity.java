@@ -12,8 +12,12 @@ import com.google.inject.Inject;
 import com.realdolmen.multifinger.R;
 import com.realdolmen.multifinger.connection.Connection;
 import com.realdolmen.multifinger.connection.Device;
+import com.realdolmen.multifinger.connection.StrokeDto;
+import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 import com.realdolmen.multifinger.fragments.GraphicsFragment;
 import com.realdolmen.multifinger.views.DrawingView;
+
+import java.nio.ByteBuffer;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -36,6 +40,8 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
 
     @Inject
     private Connection connection;
+    @Inject
+    private ConversionUtil conversionUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +90,11 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
     }
 
     private void handleDataReceived(byte[] bytes) {
-
+        for(int i = 0; i < bytes.length; i += 18) {
+            ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 18);
+            StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
+            graphicsFragment.drawOpponentStroke(strokeDto);
+        }
     }
 
     public void colorpicker() {
