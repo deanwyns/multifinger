@@ -15,6 +15,8 @@ import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 import com.realdolmen.multifinger.fragments.GraphicsFragment;
 
+import java.nio.ByteBuffer;
+
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
@@ -77,8 +79,11 @@ public class DrawingActivity extends RoboActivity {
     }
 
     private void handleDataReceived(byte[] bytes) {
-        StrokeDto strokeDto = conversionUtil.fromBytes(bytes);
-        graphicsFragment.drawOpponentStroke(strokeDto);
+        for(int i = 0; i < bytes.length; i += 18) {
+            ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 18);
+            StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
+            graphicsFragment.drawOpponentStroke(strokeDto);
+        }
     }
 
     public void colorpicker() {

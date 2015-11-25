@@ -89,6 +89,9 @@ public class DrawingView extends View {
         float y = strokeDto.getY();
         int color = strokeDto.getColor();
 
+        mPaint.setColor(color);
+        mPaint.setStrokeWidth(strokeDto.getWidth());
+
         if ((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) && id < MAX_FINGERS * 2) {
             mFingerPaths[id] = new Path();
             mFingerPaths[id].moveTo(x, y);
@@ -139,6 +142,7 @@ public class DrawingView extends View {
             strokeDto.setEvent(action);
             strokeDto.setFinger((byte) id);
             strokeDto.setColor(mPaint.getColor());
+            strokeDto.setWidth((byte)mPaint.getStrokeWidth());
             sendStroke(strokeDto);
         }
 
@@ -151,13 +155,13 @@ public class DrawingView extends View {
                         (int) mPathBounds.right, (int) mPathBounds.bottom);*/
                 invalidate();
 
-
                 StrokeDto strokeDto = new StrokeDto();
                 strokeDto.setX(event.getX(index));
                 strokeDto.setY(event.getY(index));
                 strokeDto.setEvent(action);
                 strokeDto.setFinger((byte) id);
                 strokeDto.setColor(mPaint.getColor());
+                strokeDto.setWidth((byte)mPaint.getStrokeWidth());
                 sendStroke(strokeDto);
             }
         }
