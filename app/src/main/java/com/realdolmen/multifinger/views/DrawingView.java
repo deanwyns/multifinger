@@ -90,8 +90,8 @@ public class DrawingView extends View {
         float y = strokeDto.getY();
         // Normalize coordinates
         float density = getResources().getDisplayMetrics().density;
-        x /= density;
-        y /= density;
+        x *= density;
+        y *= density;
 
         int color = strokeDto.getColor();
 
