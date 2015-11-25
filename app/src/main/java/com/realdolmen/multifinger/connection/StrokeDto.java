@@ -1,5 +1,7 @@
 package com.realdolmen.multifinger.connection;
 
+import java.io.Serializable;
+
 /**
  * 0x0: x
  * 0x4: y
@@ -10,7 +12,7 @@ package com.realdolmen.multifinger.connection;
  *
  * size: 18 bytes
  */
-public class StrokeDto {
+public class StrokeDto implements Transferable {
     private float x, y;
     private byte width;
     private int color;

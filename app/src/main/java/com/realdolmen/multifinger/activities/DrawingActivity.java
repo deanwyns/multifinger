@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import com.realdolmen.multifinger.R;
 import com.realdolmen.multifinger.connection.Connection;
 import com.realdolmen.multifinger.connection.Device;
+import com.realdolmen.multifinger.connection.NetworkCommand;
 import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 import com.realdolmen.multifinger.fragments.GraphicsFragment;
@@ -74,7 +75,8 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
             @Override
             public void handleMessage(Message msg) {
                 if(msg.what == Connection.MESSAGE_READ)
-                    handleDataReceived((byte[]) msg.obj);
+                    //handleDataReceived((byte[]) msg.obj);
+                    handleDataReceived((NetworkCommand) msg.obj);
             }
         };
 
@@ -90,23 +92,15 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
         }
     }
 
-    private void handleDataReceived(byte[] bytes) {
-        for(int i = 0; i < bytes.length; i += 19) {
-            ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 19);
-            Connection.Commands command = Connection.Commands.values()[buffer.get(0)];
-            switch(command) {
-                case CLEAR:
-                    graphicsFragment.clearView();
-                    break;
+    private void handleDataReceived(NetworkCommand command) {
+        switch(command.getCommand()) {
+            case CLEAR:
+                graphicsFragment.clearView();
+                break;
 
-                case STROKE_DRAWN:
-                    byte[] strokeData = new byte[18];
-                    buffer.position(1);
-                    buffer.get(strokeData, 0, 18);
-                    StrokeDto strokeDto = conversionUtil.fromBytes(strokeData);
-                    graphicsFragment.drawOpponentStroke(strokeDto);
-                    break;
-            }
+            case STROKE_DRAWN:
+                graphicsFragment.drawOpponentStroke((StrokeDto)command.getDto());
+                break;
         }
     }
 

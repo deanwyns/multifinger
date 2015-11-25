@@ -50,7 +50,7 @@ public class DrawingView extends View {
         mFingerPaths = new Path[MAX_FINGERS * 2];
         invalidate();
 
-        connection.write(Connection.Commands.CLEAR, new byte[1]);
+        connection.write(Connection.Commands.CLEAR, new byte[18]);
     }
 
     @Override

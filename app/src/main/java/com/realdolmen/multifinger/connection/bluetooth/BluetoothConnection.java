@@ -1,12 +1,14 @@
 package com.realdolmen.multifinger.connection.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
+import android.net.Network;
 import android.os.Handler;
 
 import com.google.inject.Singleton;
 import com.realdolmen.multifinger.connection.ClientCallback;
 import com.realdolmen.multifinger.connection.Connection;
 import com.realdolmen.multifinger.connection.Device;
+import com.realdolmen.multifinger.connection.NetworkCommand;
 import com.realdolmen.multifinger.connection.ServerCallback;
 
 import java.nio.ByteBuffer;
@@ -83,8 +85,8 @@ public class BluetoothConnection implements Connection {
         }
 
         @Override
-        public void onDataReceived(byte[] bytes) {
-            dataHandler.obtainMessage(MESSAGE_READ, bytes).sendToTarget();
+        public void onDataReceived(NetworkCommand command) {
+            dataHandler.obtainMessage(MESSAGE_READ, command).sendToTarget();
         }
     }
 
@@ -96,8 +98,8 @@ public class BluetoothConnection implements Connection {
         }
 
         @Override
-        public void onDataReceived(byte[] bytes) {
-            dataHandler.obtainMessage(MESSAGE_READ, bytes).sendToTarget();
+        public void onDataReceived(NetworkCommand command) {
+            dataHandler.obtainMessage(MESSAGE_READ, command).sendToTarget();
         }
     }
 }
