@@ -13,10 +13,10 @@ import android.view.View;
 import java.util.ArrayList;
 
 public class DrawingView extends View {
+    public static int strokeWidth = 12;
     public static final int MAX_FINGERS = 5;
     private Path[] mFingerPaths = new Path[MAX_FINGERS];
     private ArrayList<Pair<Path, Integer>> mCompletedPaths;
-    private RectF mPathBounds = new RectF();
     private Paint mPaint;
 
     public DrawingView(Context c) {
@@ -45,8 +45,8 @@ public class DrawingView extends View {
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.BLACK);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(12);
-        mPaint.setStrokeCap(Paint.Cap.BUTT);
+        mPaint.setStrokeWidth(strokeWidth);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     @Override
@@ -81,9 +81,10 @@ public class DrawingView extends View {
         } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS) {
             mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
             mCompletedPaths.add(new Pair<>(mFingerPaths[id], mPaint.getColor()));
-            mFingerPaths[id].computeBounds(mPathBounds, true);
+            /*mFingerPaths[id].computeBounds(mPathBounds, true);
             invalidate((int) mPathBounds.left, (int) mPathBounds.top,
-                    (int) mPathBounds.right, (int) mPathBounds.bottom);
+                    (int) mPathBounds.right, (int) mPathBounds.bottom);*/
+            invalidate();
             mFingerPaths[id] = null;
         }
 
@@ -91,12 +92,17 @@ public class DrawingView extends View {
             if(mFingerPaths[i] != null) {
                 int index = event.findPointerIndex(i);
                 mFingerPaths[i].lineTo(event.getX(index), event.getY(index));
-                mFingerPaths[i].computeBounds(mPathBounds, true);
+                /*mFingerPaths[i].computeBounds(mPathBounds, true);
                 invalidate((int) mPathBounds.left, (int) mPathBounds.top,
-                        (int) mPathBounds.right, (int) mPathBounds.bottom);
+                        (int) mPathBounds.right, (int) mPathBounds.bottom);*/
+                invalidate();
             }
         }
 
         return true;
+    }
+
+    public void setStrokeWidth(int strokeWidth) {
+        mPaint.setStrokeWidth(strokeWidth);
     }
 }

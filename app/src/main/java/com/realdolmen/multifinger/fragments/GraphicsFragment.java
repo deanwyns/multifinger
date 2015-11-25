@@ -46,4 +46,8 @@ public class GraphicsFragment extends Fragment {
     public void setPaintColor(int paintColor) {
         dv.setColor(paintColor);
     }
+
+    public void setStrokeWidth(int strokeWidth) {
+        dv.setStrokeWidth(strokeWidth);
+    }
 }
