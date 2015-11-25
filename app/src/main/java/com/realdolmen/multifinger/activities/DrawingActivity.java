@@ -94,7 +94,6 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
         for(int i = 0; i < bytes.length; i += 18) {
             ByteBuffer buffer = ByteBuffer.wrap(bytes, i, 18);
             StrokeDto strokeDto = conversionUtil.fromBytes(buffer.array());
-            Log.i("Multifinger", strokeDto.toString());
             graphicsFragment.drawOpponentStroke(strokeDto);
         }
     }
