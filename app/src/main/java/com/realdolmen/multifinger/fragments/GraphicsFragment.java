@@ -26,8 +26,8 @@ public class GraphicsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void clearView(){
-        dv.clearScreen();
+    public void clearView(boolean sendCommand) {
+        dv.clearScreen(sendCommand);
     }
 
     public void setPaintColor(int paintColor) {

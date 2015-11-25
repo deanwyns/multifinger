@@ -16,7 +16,6 @@ import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import roboguice.RoboGuice;
 
@@ -46,13 +45,16 @@ public class DrawingView extends View {
         mPaint.setColor(paintColor);
     }
 
-    public void clearScreen(){
+    public void clearScreen(boolean sendCommand) {
         mCompletedPaths.clear();
         mFingerPaths = new Path[MAX_FINGERS * 2];
         invalidate();
 
-        //connection.write(Connection.Commands.CLEAR, new byte[18]);
-
+        if(sendCommand) {
+            NetworkCommand command = new NetworkCommand();
+            command.setCommand(Connection.Commands.CLEAR);
+            connection.write(command);
+        }
     }
 
     @Override

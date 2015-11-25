@@ -60,7 +60,7 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
         clearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                graphicsFragment.clearView();
+                graphicsFragment.clearView(true);
             }
         });
 
@@ -95,7 +95,7 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
     private void handleDataReceived(NetworkCommand command) {
         switch(command.getCommand()) {
             case CLEAR:
-                graphicsFragment.clearView();
+                graphicsFragment.clearView(false);
                 break;
 
             case STROKE_DRAWN:
