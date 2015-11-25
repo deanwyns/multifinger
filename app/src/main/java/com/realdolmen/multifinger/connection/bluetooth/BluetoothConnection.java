@@ -1,7 +1,6 @@
 package com.realdolmen.multifinger.connection.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
-import android.net.Network;
 import android.os.Handler;
 
 import com.google.inject.Singleton;
@@ -11,7 +10,6 @@ import com.realdolmen.multifinger.connection.Device;
 import com.realdolmen.multifinger.connection.NetworkCommand;
 import com.realdolmen.multifinger.connection.ServerCallback;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 

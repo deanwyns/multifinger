@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothSocket;
 import com.realdolmen.multifinger.connection.ConnectionCallback;
 import com.realdolmen.multifinger.connection.NetworkCommand;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -28,9 +30,9 @@ public class ConnectionThread extends Thread {
         // Get the input and output streams, using temp objects because
         // member streams are final
         try {
-            tmpIn = new ObjectInputStream(socket.getInputStream());
-            tmpOut = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e) { }
+            tmpIn = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+            tmpOut = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        } catch (IOException e) { e.printStackTrace(); }
 
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
