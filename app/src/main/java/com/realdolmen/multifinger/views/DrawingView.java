@@ -88,7 +88,7 @@ public class DrawingView extends View {
         int id = strokeDto.getFinger() * 2;
         float x = strokeDto.getX();
         float y = strokeDto.getY();
-        // Normalize coordinates
+        // dp to px
         float density = getResources().getDisplayMetrics().density;
         x *= density;
         y *= density;
@@ -136,20 +136,28 @@ public class DrawingView extends View {
             mFingerPaths[id] = new Path();
             mFingerPaths[id].moveTo(event.getX(actionIndex), event.getY(actionIndex));
         } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS) {
-            mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
-            StrokeDto currentStrokeDto = new StrokeDto();
-            currentStrokeDto.setColor(mPaint.getColor());
-            currentStrokeDto.setWidth((byte) mPaint.getStrokeWidth());
-            mCompletedPaths.add(new Pair<>(mFingerPaths[id], currentStrokeDto));
-            invalidate();
-            mFingerPaths[id] = null;
+            if(mFingerPaths[id] != null) {
+                mFingerPaths[id].setLastPoint(event.getX(actionIndex), event.getY(actionIndex));
+                StrokeDto currentStrokeDto = new StrokeDto();
+                currentStrokeDto.setColor(mPaint.getColor());
+                currentStrokeDto.setWidth((byte) mPaint.getStrokeWidth());
+                mCompletedPaths.add(new Pair<>(mFingerPaths[id], currentStrokeDto));
+                invalidate();
+                mFingerPaths[id] = null;
+            }
         }
 
         if((action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) ||
                 (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP)) {
             StrokeDto strokeDto = new StrokeDto();
-            strokeDto.setX(event.getX(actionIndex));
-            strokeDto.setY(event.getY(actionIndex));
+
+            float x = event.getX(actionIndex), y = event.getY(actionIndex);
+            float density = getResources().getDisplayMetrics().density;
+            x /= density;
+            y /= density;
+            strokeDto.setX(x);
+            strokeDto.setY(y);
+
             strokeDto.setEvent(action);
             strokeDto.setFinger((byte) id);
             strokeDto.setColor(mPaint.getColor());
@@ -164,8 +172,14 @@ public class DrawingView extends View {
                 invalidate();
 
                 StrokeDto strokeDto = new StrokeDto();
-                strokeDto.setX(event.getX(index));
-                strokeDto.setY(event.getY(index));
+
+                float x = event.getX(index), y = event.getY(index);
+                float density = getResources().getDisplayMetrics().density;
+                x /= density;
+                y /= density;
+                strokeDto.setX(x);
+                strokeDto.setY(y);
+
                 strokeDto.setEvent(action);
                 strokeDto.setFinger((byte) id);
                 strokeDto.setColor(mPaint.getColor());
