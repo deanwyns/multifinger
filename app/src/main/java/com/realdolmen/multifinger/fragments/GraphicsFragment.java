@@ -1,5 +1,6 @@
 package com.realdolmen.multifinger.fragments;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,7 +24,7 @@ import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
 
-public class GraphicsFragment extends RoboFragment {
+public class GraphicsFragment extends Fragment {
     public DrawingView dv;
 
     @Nullable
