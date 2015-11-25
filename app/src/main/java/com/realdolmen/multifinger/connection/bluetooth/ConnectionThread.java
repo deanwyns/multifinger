@@ -66,6 +66,7 @@ public class ConnectionThread extends Thread {
     public void write(Object object) {
         try {
             mmOutStream.writeObject(object);
+            mmOutStream.flush();
         } catch (IOException e) { }
     }
 
