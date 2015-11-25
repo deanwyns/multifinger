@@ -17,6 +17,7 @@ import com.realdolmen.multifinger.connection.StrokeDto;
 import com.realdolmen.multifinger.connection.bluetooth.ConversionUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import roboguice.RoboGuice;
 
@@ -48,6 +49,7 @@ public class DrawingView extends View {
 
     public void clearScreen(){
         mCompletedPaths.clear();
+        mFingerPaths = new Path[MAX_FINGERS * 2];
         invalidate();
     }
 
