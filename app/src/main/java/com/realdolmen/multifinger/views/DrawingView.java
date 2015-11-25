@@ -88,6 +88,11 @@ public class DrawingView extends View {
         int id = strokeDto.getFinger() * 2;
         float x = strokeDto.getX();
         float y = strokeDto.getY();
+        // Normalize coordinates
+        float density = getResources().getDisplayMetrics().density;
+        x /= density;
+        y /= density;
+
         int color = strokeDto.getColor();
 
         mPaint.setColor(color);
@@ -97,14 +102,16 @@ public class DrawingView extends View {
             mFingerPaths[id] = new Path();
             mFingerPaths[id].moveTo(x, y);
         } else if ((action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_UP) && id < MAX_FINGERS * 2) {
-            mFingerPaths[id].setLastPoint(x, y);
-            StrokeDto currentStrokeDto = new StrokeDto();
-            currentStrokeDto.setColor(color);
-            currentStrokeDto.setWidth((byte) mPaint.getStrokeWidth());
-            mCompletedPaths.add(new Pair<>(mFingerPaths[id], currentStrokeDto));
+            if(mFingerPaths[id] != null) {
+                mFingerPaths[id].setLastPoint(x, y);
+                StrokeDto currentStrokeDto = new StrokeDto();
+                currentStrokeDto.setColor(color);
+                currentStrokeDto.setWidth((byte) mPaint.getStrokeWidth());
+                mCompletedPaths.add(new Pair<>(mFingerPaths[id], currentStrokeDto));
 
-            invalidate();
-            mFingerPaths[id] = null;
+                invalidate();
+                mFingerPaths[id] = null;
+            }
         }
 
         if(mFingerPaths[id] != null) {
