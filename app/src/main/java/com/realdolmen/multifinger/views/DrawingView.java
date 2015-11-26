@@ -188,7 +188,7 @@ public class DrawingView extends View {
                 strokeDto.setColor(mPaint.getColor());
                 strokeDto.setWidth((byte) mPaint.getStrokeWidth());
 
-                int historySize = event.getHistorySize();
+                /*int historySize = event.getHistorySize();
                 for (int j = 0; j < historySize; j++) {
                     float historicalX = event.getHistoricalX(j);
                     float historicalY = event.getHistoricalY(j);
@@ -198,7 +198,7 @@ public class DrawingView extends View {
                     strokeDto.setY(dpToPx(historicalY));
 
                     sendStroke(strokeDto);
-                }
+                }*/
 
                 mFingerPaths[i].lineTo(event.getX(index), event.getY(index));
                 invalidate();
