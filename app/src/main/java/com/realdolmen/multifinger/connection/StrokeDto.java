@@ -1,6 +1,7 @@
 package com.realdolmen.multifinger.connection;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 0x0: x
@@ -65,6 +66,24 @@ public class StrokeDto implements Transferable {
 
     public void setFinger(byte finger) {
         this.finger = finger;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StrokeDto strokeDto = (StrokeDto) o;
+        return Objects.equals(x, strokeDto.x) &&
+                Objects.equals(y, strokeDto.y) &&
+                Objects.equals(width, strokeDto.width) &&
+                Objects.equals(color, strokeDto.color) &&
+                Objects.equals(event, strokeDto.event) &&
+                Objects.equals(finger, strokeDto.finger);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, width, color, event, finger);
     }
 
     @Override

@@ -127,8 +127,13 @@ public class DrawingView extends View {
         }
     }
 
+    private StrokeDto previousStrokeDto;
     private void sendStroke(StrokeDto strokeDto) {
-        //connection.write(Connection.Commands.STROKE_DRAWN, conversionUtil.toBytes(strokeDto));
+        if(previousStrokeDto != null && previousStrokeDto.equals(strokeDto))
+            return;
+
+        previousStrokeDto = strokeDto;
+
         NetworkCommand command = new NetworkCommand();
         command.setCommand(Connection.Commands.STROKE_DRAWN);
         command.setDto(strokeDto);
@@ -163,11 +168,8 @@ public class DrawingView extends View {
             StrokeDto strokeDto = new StrokeDto();
 
             float x = event.getX(actionIndex), y = event.getY(actionIndex);
-            float density = getResources().getDisplayMetrics().density;
-            x /= density;
-            y /= density;
-            strokeDto.setX(x);
-            strokeDto.setY(y);
+            strokeDto.setX(pxToDp(x));
+            strokeDto.setY(pxToDp(y));
 
             strokeDto.setEvent(action);
             strokeDto.setFinger((byte) id);
@@ -179,27 +181,47 @@ public class DrawingView extends View {
         for(int i = 0; i < cappedPointerCount; i++) {
             if(mFingerPaths[i] != null) {
                 int index = event.findPointerIndex(i);
-                mFingerPaths[i].lineTo(event.getX(index), event.getY(index));
-                invalidate();
 
                 StrokeDto strokeDto = new StrokeDto();
-
-                float x = event.getX(index), y = event.getY(index);
-                float density = getResources().getDisplayMetrics().density;
-                x /= density;
-                y /= density;
-                strokeDto.setX(x);
-                strokeDto.setY(y);
-
                 strokeDto.setEvent(action);
                 strokeDto.setFinger((byte) i);
                 strokeDto.setColor(mPaint.getColor());
-                strokeDto.setWidth((byte)mPaint.getStrokeWidth());
+                strokeDto.setWidth((byte) mPaint.getStrokeWidth());
+
+                int historySize = event.getHistorySize();
+                for (int j = 0; j < historySize; j++) {
+                    float historicalX = event.getHistoricalX(j);
+                    float historicalY = event.getHistoricalY(j);
+                    mFingerPaths[i].lineTo(historicalX, historicalY);
+
+                    strokeDto.setX(dpToPx(historicalX));
+                    strokeDto.setY(dpToPx(historicalY));
+
+                    sendStroke(strokeDto);
+                }
+
+                mFingerPaths[i].lineTo(event.getX(index), event.getY(index));
+                invalidate();
+
+                float x = event.getX(index), y = event.getY(index);
+                strokeDto.setX(dpToPx(x));
+                strokeDto.setY(dpToPx(y));
+
                 sendStroke(strokeDto);
             }
         }
 
         return true;
+    }
+
+    private float pxToDp(float px) {
+        float density = getResources().getDisplayMetrics().density;
+        return px *= density;
+    }
+
+    private float dpToPx(float dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return dp /= density;
     }
 
     public void setStrokeWidth(int strokeWidth) {
