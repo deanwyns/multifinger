@@ -1,5 +1,6 @@
 package com.realdolmen.multifinger.activities;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -39,11 +40,15 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
     @InjectView(R.id.widthNumberPicker)
     private NumberPicker widthNumberPicker;
 
-
     @Inject
     private Connection connection;
     @Inject
     private ConversionUtil conversionUtil;
+
+    @Override
+    public void onBackPressed() {
+        connection.disconnect();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,22 +76,42 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
             }
         });
 
-        final Handler dataHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if(msg.what == Connection.MESSAGE_READ)
-                    //handleDataReceived((byte[]) msg.obj);
-                    handleDataReceived((NetworkCommand) msg.obj);
-            }
-        };
-
         Bundle extras = getIntent().getExtras();
         if(extras == null)
             return;
 
+        final ProgressDialog serverDialog = new ProgressDialog(this);
+        serverDialog.setTitle("Hosting");
+        serverDialog.setMessage("Waiting for player to connect...");
+        serverDialog.setIndeterminate(true);
+
+        final ProgressDialog clientDialog = new ProgressDialog(this);
+        clientDialog.setTitle("Connecting");
+        clientDialog.setMessage("Please wait...");
+        clientDialog.setIndeterminate(true);
+
+        final Handler dataHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch(msg.what) {
+                    case Connection.CONNECTED:
+                        clientDialog.dismiss();
+                        break;
+                    case Connection.CLIENT_CONNECTED:
+                        serverDialog.dismiss();
+                        break;
+                    case Connection.MESSAGE_READ:
+                        handleDataReceived((NetworkCommand) msg.obj);
+                        break;
+                }
+            }
+        };
+
         if(extras.getBoolean("HOST")) {
+            serverDialog.show();
             connection.host(dataHandler);
         } else {
+            clientDialog.show();
             Device device = extras.getParcelable("DEVICE");
             connection.connect(device, dataHandler);
         }

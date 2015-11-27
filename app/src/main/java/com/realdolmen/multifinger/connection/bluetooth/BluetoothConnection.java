@@ -50,6 +50,13 @@ public class BluetoothConnection implements Connection {
     }
 
     @Override
+    public void disconnect() {
+        this.isConnected = false;
+        this.connectionThread.cancel();
+    }
+
+
+    @Override
     public void write(NetworkCommand command) {
         if(connectionThread == null)
             return;
@@ -77,6 +84,7 @@ public class BluetoothConnection implements Connection {
         @Override
         public void onClientConnected(Thread connection) {
             connectionThread = (ConnectionThread)connection;
+            dataHandler.obtainMessage(CLIENT_CONNECTED).sendToTarget();
         }
 
         @Override
@@ -90,6 +98,7 @@ public class BluetoothConnection implements Connection {
         @Override
         public void onConnected(Thread connection) {
             connectionThread = (ConnectionThread)connection;
+            dataHandler.obtainMessage(CONNECTED).sendToTarget();
         }
 
         @Override

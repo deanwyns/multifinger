@@ -5,7 +5,9 @@ import android.os.Handler;
 import java.util.List;
 
 public interface Connection {
-    int MESSAGE_READ = 1;
+    int CONNECTED = 1;
+    int CLIENT_CONNECTED = 2;
+    int MESSAGE_READ = 3;
 
     enum Commands {
         CLEAR,
@@ -16,6 +18,7 @@ public interface Connection {
 
     void connect(Device device, Handler dataHandler);
     void host(Handler dataHandler);
+    void disconnect();
 
     void write(NetworkCommand command);
 
