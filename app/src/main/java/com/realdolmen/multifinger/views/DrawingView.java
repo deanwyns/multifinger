@@ -127,13 +127,7 @@ public class DrawingView extends View {
         }
     }
 
-    private StrokeDto previousStrokeDto;
     private void sendStroke(StrokeDto strokeDto) {
-        if(previousStrokeDto != null && previousStrokeDto.equals(strokeDto))
-            return;
-
-        previousStrokeDto = strokeDto;
-
         NetworkCommand command = new NetworkCommand();
         command.setCommand(Connection.Commands.STROKE_DRAWN);
         command.setDto(strokeDto);
