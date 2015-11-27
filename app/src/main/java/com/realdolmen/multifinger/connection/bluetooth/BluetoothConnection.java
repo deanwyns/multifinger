@@ -52,7 +52,8 @@ public class BluetoothConnection implements Connection {
     @Override
     public void disconnect() {
         this.isConnected = false;
-        this.connectionThread.cancel();
+        if(this.connectionThread != null)
+            this.connectionThread.cancel();
     }
 
     @Override

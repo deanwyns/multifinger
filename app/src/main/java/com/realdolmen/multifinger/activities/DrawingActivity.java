@@ -1,6 +1,7 @@
 package com.realdolmen.multifinger.activities;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,8 +31,6 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 @ContentView(R.layout.activity_drawing)
 public class DrawingActivity extends RoboActivity implements NumberPicker.OnValueChangeListener {
-    public static final int MESSAGE_READ = 1;
-
     @InjectView(R.id.clearButton)
     private Button clearButton;
     @InjectView(R.id.colorPickerButton)
@@ -49,6 +48,13 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
     @Override
     public void onBackPressed() {
         connection.disconnect();
+        super.onBackPressed();
+    }
+
+    private void goBackToMenu() {
+        Intent intent = new Intent(DrawingActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override
@@ -81,15 +87,24 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
         if(extras == null)
             return;
 
+        DialogInterface.OnCancelListener backToMenuCancelListener = new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                goBackToMenu();
+            }
+        };
+
         final ProgressDialog serverDialog = new ProgressDialog(this);
         serverDialog.setTitle("Hosting");
         serverDialog.setMessage("Waiting for player to connect...");
         serverDialog.setIndeterminate(true);
+        serverDialog.setOnCancelListener(backToMenuCancelListener);
 
         final ProgressDialog clientDialog = new ProgressDialog(this);
         clientDialog.setTitle("Connecting");
         clientDialog.setMessage("Please wait...");
         clientDialog.setIndeterminate(true);
+        clientDialog.setOnCancelListener(backToMenuCancelListener);
 
         final Handler dataHandler = new Handler() {
             @Override
@@ -105,9 +120,7 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
                         handleDataReceived((NetworkCommand) msg.obj);
                         break;
                     case Connection.DISCONNECT:
-                        Intent intent = new Intent(DrawingActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+                        goBackToMenu();
                         break;
                 }
             }

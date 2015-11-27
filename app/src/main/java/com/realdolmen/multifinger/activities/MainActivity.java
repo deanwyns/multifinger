@@ -52,11 +52,6 @@ public class MainActivity extends RoboActivity {
             }
         });
 
-        if (!connection.isAvailable()) {
-            Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBT, REQUEST_BLUETOOTH);
-        }
-
         hostButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +60,16 @@ public class MainActivity extends RoboActivity {
                 startActivity(intent);
             }
         });
+
+        if (!connection.isAvailable()) {
+            Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBT, REQUEST_BLUETOOTH);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         List<Device> devices = connection.getUsers();
         ArrayAdapter<Device> userArrayAdapter = new ArrayAdapter<Device>(this, R.layout.bluetooth_device_list_item, devices);
