@@ -55,7 +55,6 @@ public class BluetoothConnection implements Connection {
         this.connectionThread.cancel();
     }
 
-
     @Override
     public void write(NetworkCommand command) {
         if(connectionThread == null)
@@ -91,6 +90,11 @@ public class BluetoothConnection implements Connection {
         public void onDataReceived(NetworkCommand command) {
             dataHandler.obtainMessage(MESSAGE_READ, command).sendToTarget();
         }
+
+        @Override
+        public void onDisconnect() {
+            dataHandler.obtainMessage(DISCONNECT).sendToTarget();
+        }
     }
 
     private class ClientCallbackImpl implements ClientCallback {
@@ -104,6 +108,11 @@ public class BluetoothConnection implements Connection {
         @Override
         public void onDataReceived(NetworkCommand command) {
             dataHandler.obtainMessage(MESSAGE_READ, command).sendToTarget();
+        }
+
+        @Override
+        public void onDisconnect() {
+            dataHandler.obtainMessage(DISCONNECT).sendToTarget();
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.realdolmen.multifinger.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -102,6 +103,11 @@ public class DrawingActivity extends RoboActivity implements NumberPicker.OnValu
                         break;
                     case Connection.MESSAGE_READ:
                         handleDataReceived((NetworkCommand) msg.obj);
+                        break;
+                    case Connection.DISCONNECT:
+                        Intent intent = new Intent(DrawingActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                         break;
                 }
             }

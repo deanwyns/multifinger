@@ -7,7 +7,8 @@ import java.util.List;
 public interface Connection {
     int CONNECTED = 1;
     int CLIENT_CONNECTED = 2;
-    int MESSAGE_READ = 3;
+    int DISCONNECT = 3;
+    int MESSAGE_READ = 5;
 
     enum Commands {
         CLEAR,

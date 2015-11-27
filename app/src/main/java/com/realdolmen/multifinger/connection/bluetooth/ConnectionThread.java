@@ -15,6 +15,8 @@ import java.io.ObjectOutputStream;
  * Created by DWSAX40 on 25/11/2015.
  */
 public class ConnectionThread extends Thread {
+    private boolean connected;
+
     private ConnectionCallback callback;
     private final BluetoothSocket mmSocket;
     private final ObjectInputStream mmInStream;
@@ -37,6 +39,8 @@ public class ConnectionThread extends Thread {
 
         mmOutStream = tmpOut;
         mmInStream = tmpIn;
+
+        connected = true;
     }
 
     public void run() {
@@ -44,7 +48,7 @@ public class ConnectionThread extends Thread {
         //int bytes; // bytes returned from read()
 
         // Keep listening to the InputStream until an exception occurs
-        while (true) {
+        while (connected) {
             try {
                 // Read from the InputStream
                 //bytes = mmInStream.read(buffer);
@@ -74,6 +78,8 @@ public class ConnectionThread extends Thread {
     public void cancel() {
         try {
             mmSocket.close();
+            this.connected = false;
+            callback.onDisconnect();
         } catch (IOException e) { }
     }
 }
